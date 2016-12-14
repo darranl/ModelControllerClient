@@ -17,8 +17,14 @@
  */
 package org.wildfly.security.elytron;
 
+import java.security.Provider;
 import org.jboss.as.controller.client.ModelControllerClient;
+import org.jboss.as.controller.client.ModelControllerClientConfiguration;
 import org.jboss.dmr.ModelNode;
+import org.wildfly.security.WildFlyElytronProvider;
+import org.wildfly.security.auth.client.AuthenticationConfiguration;
+import org.wildfly.security.auth.client.AuthenticationContext;
+import org.wildfly.security.auth.client.MatchRule;
 
 /**
  *
@@ -34,7 +40,9 @@ public class SimpleClient {
         Runnable runnable = new Runnable() {
             public void run() {
                 try {
-                    ModelControllerClient client = ModelControllerClient.Factory.create("127.0.0.1", 9990);
+                    ModelControllerClient client = ModelControllerClient.Factory
+                            .create(new ModelControllerClientConfiguration.Builder().setHostName("127.0.0.1").setPort(9990)
+                                    .setConnectionTimeout(36000).build());
 
                     ModelNode operation = new ModelNode();
                     operation.get("operation").set("whoami");
@@ -53,7 +61,24 @@ public class SimpleClient {
             }
         };
 
-        runnable.run();
+        /*
+         * Could Use - AuthenticationContext.captureCurrent();
+         */
+
+        AuthenticationConfiguration common = AuthenticationConfiguration.EMPTY
+                .useProviders(() -> new Provider[] { new WildFlyElytronProvider() })
+                .allowSaslMechanisms("DIGEST-MD5")
+                .useRealm("ManagementRealm");
+
+        AuthenticationConfiguration monitor = common.useName("monitor").usePassword("password1!");
+
+        AuthenticationConfiguration administrator = common.useName("administrator").usePassword("password1!");
+
+        AuthenticationContext context = AuthenticationContext.empty();
+        context = context.with(MatchRule.ALL.matchHost("127.0.0.1"), monitor);
+        context = context.with(MatchRule.ALL.matchHost("localhost"), administrator);
+
+        context.run(runnable);
     }
 
 }
