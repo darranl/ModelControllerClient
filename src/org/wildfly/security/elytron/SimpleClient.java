@@ -31,19 +31,29 @@ public class SimpleClient {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-        ModelControllerClient client = ModelControllerClient.Factory.create("127.0.0.1", 9990);
+        Runnable runnable = new Runnable() {
+            public void run() {
+                try {
+                    ModelControllerClient client = ModelControllerClient.Factory.create("127.0.0.1", 9990);
 
-        ModelNode operation = new ModelNode();
-        operation.get("operation").set("whoami");
-        operation.get("verbose").set("true");
+                    ModelNode operation = new ModelNode();
+                    operation.get("operation").set("whoami");
+                    operation.get("verbose").set("true");
 
-        System.out.println("Execuring Operation\n");
-        System.out.println(operation.toString());
+                    System.out.println("Execuring Operation\n");
+                    System.out.println(operation.toString());
 
-        ModelNode result = client.execute(operation);
+                    ModelNode result = client.execute(operation);
 
-        System.out.println("\nResult\n");
-        System.out.println(result.toString());
+                    System.out.println("\nResult\n");
+                    System.out.println(result.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        runnable.run();
     }
 
 }
