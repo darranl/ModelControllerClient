@@ -10,8 +10,7 @@
         </authentication-rules>
         <authentication-configurations>
             <configuration name="monitor">
-                <allow-sasl-mechanisms names="DIGEST-MD5" />
-                 <use-service-loader-providers />
+                <sasl-mechanism-selector selector="DIGEST-MD5" />
                  <set-user-name name="monitor" />
                  <credentials>
                      <clear-password password="password1!" />
@@ -20,8 +19,7 @@
              </configuration>
              
              <configuration name="administrator">
-                <allow-sasl-mechanisms names="DIGEST-MD5" />
-                 <use-service-loader-providers />
+                <sasl-mechanism-selector selector="DIGEST-MD5" />
                  <set-user-name name="administrator" />
                  <credentials>
                      <clear-password password="password1!" />
