@@ -25,6 +25,7 @@ import org.wildfly.security.WildFlyElytronProvider;
 import org.wildfly.security.auth.client.AuthenticationConfiguration;
 import org.wildfly.security.auth.client.AuthenticationContext;
 import org.wildfly.security.auth.client.MatchRule;
+import org.wildfly.security.sasl.SaslMechanismSelector;
 
 /**
  *
@@ -65,9 +66,9 @@ public class SimpleClient {
          * Could Use - AuthenticationContext.captureCurrent();
          */
 
-        AuthenticationConfiguration common = AuthenticationConfiguration.EMPTY
+        AuthenticationConfiguration common = AuthenticationConfiguration.empty()
                 .useProviders(() -> new Provider[] { new WildFlyElytronProvider() })
-                .allowSaslMechanisms("DIGEST-MD5")
+                .setSaslMechanismSelector(SaslMechanismSelector.fromString("DIGEST-MD5"))
                 .useRealm("ManagementRealm");
 
         AuthenticationConfiguration monitor = common.useName("monitor").usePassword("password1!");
